@@ -27,16 +27,15 @@ const genrateAccessandRefreshToken = async (id) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   const { fullName, username, email, password } = req.body;
-
+  console.log(fullName, username, email, password);
   if (
     [fullName, username, email, password].some((field) => field?.trim() === "")
   ) {
     throw new ApiError(400, "Please fill all the fields");
   }
 
-  const existedUser = await User.findOne({
-    $or: [{ username }, { email }],
-  });
+  const existedUser = await User.findOne({ username });
+  console.log(existedUser);
 
   if (existedUser) {
     throw new ApiError(409, "User with email or username already exists");
@@ -58,7 +57,7 @@ const registerUser = asyncHandler(async (req, res) => {
     username,
     email,
     password,
-    avatar: avatar?.url,
+    avatar: avatar ? avatar.url : null,
   });
 
   const createdUser = await User.findById(user._id).select(
